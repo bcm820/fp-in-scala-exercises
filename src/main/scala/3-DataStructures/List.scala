@@ -9,7 +9,6 @@ sealed trait List[+A]
 case object Nil extends List[Nothing]
 case class Cons[+A](head: A, tail: List[A]) extends List[A]
 
-// companion object with functions for list ops
 object List {
 
   def apply[A](as: A*): List[A] =
@@ -28,21 +27,23 @@ object List {
   }
 
   // 3.2
-  // tail removes the first element of a List
+  // Implement the function tail for removing the first element of a List.
   def tail[A](as: List[A]): List[A] = as match {
     case Nil         => throw new Error("empty list")
     case Cons(_, bs) => bs
   }
 
   // 3.3
-  // replace the head of a list
+  // Implement the function setHead for replacing
+  // the first element of a List with a different value.
   def setHead[A](as: List[A], b: A): List[A] = as match {
     case Nil         => throw new Error("empty list")
     case Cons(_, bs) => Cons(b, bs)
   }
 
   // 3.4
-  // remove the first n elements from a list
+  // Generalize tail to the function drop,
+  // which removes the first n elements from a list.
   def drop[A](as: List[A], n: Int): List[A] = as match {
     case Nil                     => throw new Error("empty list")
     case Cons(_, bs) if (n == 1) => bs
@@ -50,7 +51,8 @@ object List {
   }
 
   // 3.5
-  // keep removing elements while they match a predicate
+  // Implement dropWhile, which removes elements from the List 
+  // prefix as long as they match a predicate.
   def dropWhile[A](as: List[A], f: A => Boolean): List[A] = as match {
     case Cons(b, bs) if f(b) => dropWhile(bs, f)
     case _                   => as
@@ -65,8 +67,9 @@ object List {
   }
 
   // 3.6
-  // return a list without the last element
-  // since this is an SLL, it is slow
+  // Implement a function, init, that returns a List
+  // consisting of all but the last element of a List.
+  // Note: Since this is an SLL, it is slow
   def init[A](as: List[A]): List[A] = as match {
     case Nil          => throw new Error("empty list")
     case Cons(_, Nil) => Nil
@@ -96,74 +99,79 @@ object List {
   def product2(xs: List[Double]) = foldRight(xs, 1.0)(_ * _)
 
   // 3.9
-  // length of list using foldRight
+  // Compute the length of a list using foldRight.
   def length[A](xs: List[A]) = foldRight(xs, 0)((_, acc) => acc + 1)
 
   // 3.10
-  // since foldRight is not tailrec, implement tailrec foldLeft
+  // foldRight is not tail-recursive (not stack-safe).
+  // Write another general list-recursion function, foldLeft, that is.
   def foldLeft[A,B](as: List[A], acc: B)(f: (B,A) => B): B = as match {
     case Nil         => acc
     case Cons(b, bs) => foldLeft(bs, f(acc, b))(f)
   }
 
   // 3.11
-  // sum, product, and length in terms of foldLeft
+  // Write sum, product, and a function to
+  // compute the length of a list using foldLeft.
   def sum3(xs: List[Int]) = foldLeft(xs, 0)(_ + _)
   def product3(xs: List[Double]) = foldLeft(xs, 1.0)(_ * _)
   def length2[A](xs: List[A]) = foldLeft(xs, 0)((acc, _) => acc + 1)
 
   // 3.12
-  // reverse a list using a fold
+  // Write a function that returns the reverse of a list. Use a fold.
   def reverse[A](as: List[A]) =
     foldLeft(as, List[A]())((acc, h) => Cons(h, acc))
 
   // 3.13
-  // foldRight in terms of foldLeft (can't do foldLeft via foldRight)
+  // Can you write foldLeft in terms of foldRight?
   def foldRight2[A,B](as: List[A], acc: B)(f: (A,B) => B): B =
     foldLeft(reverse(as), acc)((b, a) => f(a, b))
 
   // 3.14
-  // append in terms of fold
-  // replaces the `Nil` constructor of the first list with the second
+  // Implement append in terms of either foldLeft or foldRight.
+  // Note: Replaces the `Nil` constructor of the first list with the second list.
   def append2[A](a1: List[A], a2: List[A]) = foldRight2(a1, a2)(Cons(_, _))
 
   // 3.15
-  // concatenate a list of lists into a single list (e.g. flatten)
-  // its runtime should be linear, using functions already defined
+  // Write a function that concatenates a list of lists into a single list (e.g. flatten)
+  // Its runtime should be linear, using functions already defined
   def concat[A](as: List[List[A]]): List[A] = foldLeft(as, List[A]())(append2)
 
   // 3.16
-  // transform a list of integers by adding 1 to each element
-  // foldRight works best since the acc
-  def add1(xs: List[Int]) =
-    foldRight2(xs, List[Int]())((h, acc) => Cons(h + 1, acc))
+  // Write a function that transforms a list of integers by adding 1 to each element.
+  def add1(xs: List[Int]) = foldRight2(xs, List[Int]())((h, acc) => Cons(h + 1, acc))
 
   // 3.17
-  // transform a list of doubles into a list of their string representations
+  // Write a function that turns each value in a List[Double] into a String.
   def stringify(xs: List[Double]) =
     foldRight2(xs, List[String]())((h, acc) => Cons(h.toString, acc))
 
   // 3.18
-  // write map to generalize transforming a list's elements
+  // Write a function map that generalizes modifying each element
+  // in a list while maintain- ing the structure of the list.
   def map[A,B](as: List[A])(f: A => B): List[B] =
     foldRight2(as, List[B]())((h, acc) => Cons(f(h), acc))
 
   // 3.19
-  // filter
+  // Write a function filter that removes elements
+  // from a list unless they satisfy a given predicate.
   def filter[A](as: List[A])(f: A => Boolean): List[A] =
     foldRight2(as, List[A]())((h, acc) => if (f(h)) Cons(h, acc) else acc)
 
   // 3.20
-  // flatMap
+  // Write a function flatMap that works like map except that
+  // the function given will return a list instead of a single result,
+  // and that list should be inserted into the final resulting list.
   def flatMap[A,B](as: List[A])(f: A => List[B]): List[B] = concat(map(as)(f))
 
   // 3.21
-  // filter in terms of flatMap
+  // Use flatMap to implement filter.
   def filterWithFlatMap[A](as: List[A])(f: A => Boolean): List[A] =
     flatMap(as)(a => if (f(a)) Cons(a, Nil) else Nil)
 
   // 3.22
-  // accept two lists of the same length and add elements in the same position
+  // Write a function that accepts two lists and
+  // constructs a new list by adding corresponding elements
   def addPos(xs1: List[Int], xs2: List[Int]): List[Int] = (xs1, xs2) match {
     case (Nil, _) => Nil
     case (_, Nil) => Nil
@@ -171,7 +179,8 @@ object List {
   }
 
   // 3.23
-  // generalize the previous so it's not specific to integers or addition
+  // Generalize the function you just wrote so that
+  // it’s not specific to integers or addition.
   def zipWith[A,B,C](xs1: List[A], xs2: List[B])(f: (A,B) => C): List[C] = (xs1, xs2) match {
     case (Nil, _) => Nil
     case (_, Nil) => Nil
@@ -179,8 +188,7 @@ object List {
   }
 
   // 3.24
-  // implement hasSubsequence to check whether a List contains another list
-  // note- wasn't able to get this one without looking up a solution
+  // Implement hasSubsequence for checking whether a List contains another List as a subsequence.
   def startsWith[A](l: List[A], prefix: List[A]): Boolean = (l,prefix) match {
     case (_,Nil) => true
     case (Cons(h,t),Cons(h2,t2)) if h == h2 => startsWith(t, t2)

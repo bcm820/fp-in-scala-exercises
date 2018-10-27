@@ -1,6 +1,6 @@
 package gettingstarted
 
-object PolymorphicFunctions extends App {
+object PolymorphicFunctions {
 
   // Polymorphic/generic function
   // Returns first index in array that passes a test, or -1 if not found
@@ -11,6 +11,8 @@ object PolymorphicFunctions extends App {
       else loop(n + 1)
     loop(0)
   }
+
+  // Usage:
   findFirst(Array("hello", "world"), (s: String) => s.contains("w"))
 
   // 2.2: Implement a polymorphic function
@@ -22,6 +24,8 @@ object PolymorphicFunctions extends App {
       else loop(n + 1)
     loop(0)
   }
+
+  // Usage:
   isSorted(Array(1, 2, 3, 6, 5), (x: Int, y: Int) => x < y)
 
   // Polymorphic functions limit implementations

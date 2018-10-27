@@ -1,6 +1,6 @@
 package gettingstarted
 
-object Loops extends App {
+object Loops {
 
   // A definition of factorial, using a local, tail recursive function
   def factorial(n: Int): Int = {

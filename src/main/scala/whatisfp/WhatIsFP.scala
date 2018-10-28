@@ -55,7 +55,7 @@ class Cafe {
 
 }
 
-object WhatIsFP extends App {
+object WhatIsFP {
   val cafe = new Cafe
   val cc = CreditCard()
   cafe.buyAndChargeForCoffee(cc)

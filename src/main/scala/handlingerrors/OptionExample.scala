@@ -1,6 +1,6 @@
 // Using std lib Option
 // map.get returns an Option
-object BasicExample {
+object OptionExample {
 
   case class Employee(name: String, department: String) {
     def manager: Option[Employee] = managers.get(department)

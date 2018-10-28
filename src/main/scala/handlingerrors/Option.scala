@@ -24,9 +24,9 @@ sealed trait Option[+A] {
   // if Some, wrap in another Some; else map to None
   // `get` call either returns wrapped Some or Option B
   // Can be implemented via map(Some(_)).getOrElse(ob)
-  def orElse[B >: A](ob: => Option[B]): Option[B] = this match {
+  def orElse[B >: A](optB: => Option[B]): Option[B] = this match {
     case Some(_) => this
-    case None    => ob
+    case None    => optB
   }
 
   // flatMap lets us construct a computation with multiple stages,
@@ -71,19 +71,33 @@ object Option {
     else Some(xs.sum / xs.length)
 
   // 4.2
-  // Variance is the mean of `math.pow(x - m, 2)` for each element.
-  // Via flatMap: mean(xs).flatMap(m => mean(xs.map(x => math.pow(x - m, 2))))
-  // Using for-comp (std lib): for (x <- xs; m <- mean(xs)) yield math.pow(x - m, 2)
-  def variance(xs: Seq[Double]): Option[Double] = {
-    val m = mean(xs).getOrElse(0.0)
-    val ms = xs.map(x => math.pow(x - m, 2))
-    mean(ms)
+  // Variance is the mean of `math.pow(x - m, 2)` for each element in a sequence.Z
+  def variance(xs: Seq[Double]): Option[Double] =
+    mean(xs).flatMap(m => mean(xs.map(x => math.pow(x - m, 2))))
+
+  // 4.3
+  // Write `map2` which combines two Option values using a binary function.
+  // If either Option value is None, then the return value is too.
+  // Via flatMap: a.flatMap(x => b.map(y => f(x, y)))
+  def map2[A, B, C](a: Option[A], b: Option[B])(f: (A, B) => C): Option[C] =
+    for (x <- a; y <- b) yield f(x, y)
+
+  // 4.4
+  // Write `sequence` which combines a list of Options into one Option
+  // containing a list of all the Some values in the original list.
+  // If the list contains a None, the whole result should be None.
+  def sequence[A](a: List[Option[A]]): Option[List[A]] = a match {
+    case Nil    => Some(Nil)
+    case h :: t => map2(h, sequence(t))(_ :: _)
   }
 
-  def map2[A, B, C](a: Option[A], b: Option[B])(f: (A, B) => C): Option[C] = ???
-
-  def sequence[A](a: List[Option[A]]): Option[List[A]] = ???
-
-  def traverse[A, B](a: List[A])(f: A => Option[B]): Option[List[B]] = ???
+  // 4.5
+  // Write `traverse`, which maps over a list using a function that might fail,
+  // returning None if applying it to any element of the list returns None.
+  // Try not to use `map` and `sequence`, visiting each element only once.
+  def traverse[A, B](a: List[A])(f: A => Option[B]): Option[List[B]] = a match {
+    case Nil    => Some(Nil)
+    case h :: t => map2(f(h), traverse(t)(f))(_ :: _)
+  }
 
 }

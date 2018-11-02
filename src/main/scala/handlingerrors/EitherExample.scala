@@ -1,6 +1,6 @@
 package handlingerrors
 
-object EitherExample extends App {
+object EitherExample {
 
   case class Person(name: Name, age: Age)
   case class Name(value: String)

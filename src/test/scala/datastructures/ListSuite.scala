@@ -1,4 +1,4 @@
-package datastructures
+package datastructures.list
 
 import org.scalatest.FunSuite
 import List._

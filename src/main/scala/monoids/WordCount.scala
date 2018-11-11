@@ -1,6 +1,6 @@
 package monoids
 
-import FoldingLists._
+import Folds._
 
 /* Parallel parsing
 What if we wanted to determine the word count of a large document?
@@ -15,7 +15,7 @@ sealed trait WC
 case class Stub(chars: String) extends WC
 case class Part(left: String, words: Int, right: String) extends WC
 
-object WordCount extends App {
+object WordCount {
 
   // 10.10
   // Write a monoid instance for WC.

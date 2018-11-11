@@ -1,6 +1,6 @@
 package monoids
 
-import FoldingLists._
+import Folds._
 
 import org.scalacheck.Properties
 import org.scalacheck.Prop.forAll

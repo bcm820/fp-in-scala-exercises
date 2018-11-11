@@ -2,7 +2,7 @@ package monoids
 
 import Monoids._
 
-object FoldingLists {
+object Folds extends App {
 
   /* Folding lists with monoids
   Consider the signatures of foldLeft and foldRight on list:
@@ -91,6 +91,5 @@ object FoldingLists {
       foldMap(ints.map(i => (i, true)), monoid)(identity)._2
     }
   }
-
 
 }

@@ -1,4 +1,4 @@
-package datastructures
+package datastructures.list
 
 // List is an example of an algebraic data type (ADT).
 // An ADT is defined by one or more data constructors.

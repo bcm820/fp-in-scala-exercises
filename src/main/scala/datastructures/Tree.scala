@@ -1,4 +1,4 @@
-package datastructures
+package datastructures.tree
 
 sealed trait Tree[+A]
 case class Leaf[A](value: A) extends Tree[A]
@@ -47,6 +47,7 @@ object Tree {
       g(partialFold(l), partialFold(r))
     }
   }
+
   def size2[A](t: Tree[A]): Int = fold(t)(a => 1)(1 + _ + _)
   def maximum2(t: Tree[Int]): Int = fold(t)(a => a)(_ max _)
   def depth2[A](t: Tree[A]): Int = fold(t)(a => 0)((l, r) => 1 + (l max r))

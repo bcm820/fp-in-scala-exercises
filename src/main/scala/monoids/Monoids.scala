@@ -79,4 +79,58 @@ object Monoids {
   // to implement a property for the monoid laws.
   // Use your property to test the monoids we’ve written.
 
+  /* Composing monoids
+  The real power of monoids comes from the fact that they compose.
+  For monoids A and B, the tuple (A, B) is also a monoid (product!).
+  This allows us to assemble and compose more complex monoids,
+  which we can use to perform multiple calculations simultaneously
+  when folding a data structure.
+  */
+
+  // 10.16
+  // Write productMonoid.
+  def productMonoid[A,B](A: Monoid[A], B: Monoid[B]) = new Monoid[(A,B)] {
+      def op(x: (A,B), y: (A,B)) = (A.op(x._1, y._1), B.op(x._2, y._2))
+      val zero = (A.zero, B.zero)
+    }
+
+  // Using productMonoid, we can take calculate the mean of a list of ints:
+  def mean(xs: List[Int]) = {
+    val m = productMonoid(intAddition, intAddition)
+    val p = ListFolds.foldMap(xs, m)(i => (1, i))
+    p._2 / p._1.toDouble
+  }
+  
+  // Monoid for merging two maps if their value types are also monoids
+  // Note the convention of capitalizing the monoid value being mapped
+  def mapMergeMonoid[K, V](M: Monoid[V]) = new Monoid[Map[K, V]] {
+    def op(a: Map[K, V], b: Map[K, V]) =
+      (a.keySet ++ b.keySet).foldLeft(zero) { (acc, k) =>
+        acc.updated(k, M.op(a.getOrElse(k, M.zero), b.getOrElse(k, M.zero)))
+      }
+    val zero = Map[K, V]()
+  }
+
+  // Example of assembling more complex monoids from mapMergeMonoid
+  // When merging two nested maps, corresponding int values will be added
+  def mapIntMonoid[A]: Monoid[Map[A, Int]] = mapMergeMonoid(intAddition)
+  def nestedMapIntMonoid[A,B]: Monoid[Map[A, Map[B, Int]]] =
+    mapMergeMonoid(mapIntMonoid)
+
+  // 10.17
+  // Write a monoid instance for functions whose result value types are monoids
+  // Pass a monoid of the value type returned by each function
+  def functionMonoid[A, B](B: Monoid[B]) = new Monoid[A => B] {
+    def op(f: A => B, g: A => B) = a => B.op(f(a), g(a))
+    val zero = a => B.zero
+  }
+
+  // 10.18
+  // A bag is like a Set, but represented by a map with one entry per element,
+  // the element being the key and the value being the element's count in the bag.
+  // e.g. `bag(List(a, rose, is, a, rose)) == Map(a -> 2, rose -> 2, is -> 1)
+  // Use monoids to compute a bag from an IndexedSeq.
+  def bag[A](as: IndexedSeq[A]): Map[A, Int] =
+    ListFolds.foldMapV(as, mapIntMonoid[A])(a => Map(a -> 1))
+
 }

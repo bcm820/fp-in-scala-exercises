@@ -1,6 +1,6 @@
 package monoids
 
-import Folds._
+import ListFolds._
 
 /* Parallel parsing
 What if we wanted to determine the word count of a large document?

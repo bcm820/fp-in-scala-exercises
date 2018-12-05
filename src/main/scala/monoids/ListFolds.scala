@@ -2,7 +2,7 @@ package monoids
 
 import Monoids._
 
-object ListFolds extends App {
+object ListFolds {
 
   /* Folding lists with monoids
   Consider the signatures of foldLeft and foldRight on list:

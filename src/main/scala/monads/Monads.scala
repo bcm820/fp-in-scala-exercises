@@ -44,7 +44,7 @@ trait Monad[F[_]] extends Functor[F] {
 
 }
 
-object Monads extends App {
+object Monads {
 
   val option = new Monad[Option] {
     def unit[A](a: => A) = Some(a)

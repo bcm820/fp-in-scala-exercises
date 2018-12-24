@@ -9,7 +9,7 @@ case class Failure[E](es: List[E]) extends Validation[E, Nothing]
 
 case class WebForm(name: String, birthdate: Date, phoneNumber: String)
 
-object Validations extends App {
+object Validations {
 
   def validationAp[E] = new Applicative[({ type f[x] = Validation[E, x] })#f] {
     def unit[A](a: => A): Validation[E, A] = Success(a)
